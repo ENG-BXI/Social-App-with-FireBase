@@ -14,8 +14,7 @@ main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-//
-// k
+
   await cacheHelper.init();
   uId = cacheHelper.getString(key: 'uId');
   Bloc.observer = MyBlocObserver();
