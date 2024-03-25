@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "578203458920",
+    "project_id": "udemysocialapp-51367",
+    "storage_bucket": "udemysocialapp-51367.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578203458920:android:22ba38168b954e25b6cadd",
+        "android_client_info": {
+          "package_name": "com.example.learn_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7HZVSzmSAHrTsdP5700PDZMwjd8bn1mY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:578203458920:android:534e85840a4d4c08b6cadd",
+        "android_client_info": {
+          "package_name": "com.example.social_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD7HZVSzmSAHrTsdP5700PDZMwjd8bn1mY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
