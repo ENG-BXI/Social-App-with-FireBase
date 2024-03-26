@@ -1,14 +1,16 @@
 import 'dart:io';
-
 import 'package:bloc/bloc.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:social_app/Models/postModel.dart';
 import 'package:social_app/Models/userModel.dart';
 import 'package:social_app/Modules/AppScreen.dart';
+import 'package:social_app/Modules/PostScreen.dart';
 import 'package:social_app/Modules/chatScreen.dart';
 import 'package:social_app/Modules/homeScreen.dart';
 import 'package:social_app/Modules/settingScreen.dart';
@@ -17,7 +19,6 @@ import 'package:social_app/shared/componse/com.dart';
 import 'package:social_app/shared/local/sharedPerefrence.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-
 part 'social_app_state.dart';
 
 class SocialAppCubit extends Cubit<SocialAppState> {
@@ -142,7 +143,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   }
 
   userModel? model;
-  getFireBaseData({bool isUpdate = false , bool isRefresh = false}) {
+  getFireBaseData({bool isUpdate = false, bool isRefresh = false}) {
     emit(settingScreenLoading());
     if (model != null && !isUpdate && !isRefresh) {
       emit(settingScreenLoaded());
@@ -161,18 +162,24 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   List<Widget> screen = [
     homeScreen(),
     chatScreen(),
+    PostsScreen(),
     userScreen(),
     settingScreen()
   ];
   int currentIndex = 0;
-  changeCurrentIndex(int index) {
+  changeCurrentIndex(int index, context) {
     currentIndex = index;
+    if (index == 2) {
+      Navigator.push(context, MaterialPageRoute(builder: (_) => PostsScreen()));
+      currentIndex = 0;
+    }
     emit(changeCurrentIndexState());
   }
 
   List<String> titles = [
     'Home',
     'Chats',
+    'Posts',
     'Users',
     'Settings',
   ];
@@ -272,6 +279,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     });
   }
 
+  postModel? pModel;
   uploadDataToFireStore({
     String? name,
     String? email,
@@ -291,7 +299,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
       return coverImage == null ? model!.cover : coverImage;
     }
 
-    userModel _model2 = userModel(
+    userModel _model = userModel(
       name: name == null ? model!.name : name,
       email: email == null ? model!.email : email,
       password: password == null ? model!.password : password,
@@ -310,11 +318,84 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     _firebaseFirestore
         .collection('users')
         .doc(uId)
-        .update(_model2.toMap())
+        .update(_model.toMap())
         .then((value) {
       getFireBaseData(isUpdate: true);
     }).catchError((error) {
       emit(uploadDataError(error: error.toString()));
+    });
+  }
+
+  File? PostImage;
+  String? UrlPostImage;
+  Future PutPostImage() async {
+    var task = await _firebaseStorage
+        .ref()
+        .child('posts/$uId/${Uri.file(PostImage!.path).pathSegments.last}')
+        .putFile(PostImage!);
+    UrlPostImage = await task.ref.getDownloadURL();
+  }
+
+  CreatePost({
+    required String name,
+    required String text,
+    String? tag,
+    required bool isVerification,
+    required BuildContext context,
+  }) async {
+    emit(CreatePostLoadingData());
+    if (PostImage != null) {
+      print(PostImage!.path);
+      print("===========================================================");
+      await PutPostImage();
+    }
+    postModel _model = postModel(
+      name: name,
+      text: text,
+      tag: tag,
+      image: UrlPostImage,
+      isVerficatifon: isVerification,
+    );
+    _firebaseFirestore
+        .collection('posts')
+        //.add to add (doc) and random ID
+        .add(_model.toMap())
+        .then((value) {
+      emit(CreatePostLoadedData());
+      Navigator.pop(context);
+      PostImage = null;
+      UrlPostImage = null;
+      Posts = [];
+      getPosts();
+    }).catchError((error) {
+      emit(CreatePostErrorData(Error: error.toString()));
+    });
+  }
+
+  Future PostImagePicker() async {
+    var image = ImagePicker();
+    XFile? fileX = await image.pickImage(source: ImageSource.gallery);
+    if (fileX != null) {
+      PostImage = File(fileX.path);
+      emit(postImagePickerLoaded());
+    }
+  }
+
+  removeImagePost() {
+    PostImage = null;
+    emit(removeImagePostState());
+  }
+
+  List<postModel> Posts = [];
+  getPosts() {
+    emit(getPostsLoadingData());
+    _firebaseFirestore.collection('posts').get().then((value) {
+      value.docs.forEach((element) {
+        Posts.add(postModel.fromjson(element.data()));
+        emit(getPostsLoadedData());
+      });
+    }).catchError((error) {
+      emit(getPostsErrorData(Error: error.toString()));
     });
   }
 }

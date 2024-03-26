@@ -8,6 +8,7 @@ class AppScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     SocialAppCubit.get(context).getFireBaseData();
+   
 
     return BlocConsumer<SocialAppCubit, SocialAppState>(
       listener: (context, state) {
@@ -23,9 +24,7 @@ class AppScreen extends StatelessWidget {
             title: Text(cubit.titles[cubit.currentIndex]),
             actions: [
               IconButton(
-                onPressed: () {
-                
-                },
+                onPressed: () {},
                 icon: Icon(IconBroken.Notification),
               ),
               IconButton(
@@ -47,13 +46,15 @@ class AppScreen extends StatelessWidget {
               BottomNavigationBarItem(
                   icon: Icon(IconBroken.Chat), label: 'Chats'),
               BottomNavigationBarItem(
+                  icon: Icon(IconBroken.Paper_Plus), label: 'Posts'),
+              BottomNavigationBarItem(
                   icon: Icon(IconBroken.User), label: 'Users'),
               BottomNavigationBarItem(
                   icon: Icon(IconBroken.Setting), label: 'Settings'),
             ],
             currentIndex: cubit.currentIndex,
             onTap: (index) {
-              cubit.changeCurrentIndex(index);
+              cubit.changeCurrentIndex(index, context);
             },
           ),
         );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:social_app/cubit/social_app_cubit.dart';
 
 Widget defulttextFormField(
@@ -88,3 +89,17 @@ const defualtColor = Colors.deepOrange ;
 String? uId  = '';
 String? ProfileImageUrl  = '';
 String? CoverImageUrl  = '';
+toastMessage({
+  required String message,
+  required Color color,
+}) {
+  Fluttertoast.showToast(
+    msg: message,
+    toastLength: Toast.LENGTH_LONG,
+    gravity: ToastGravity.BOTTOM,
+    timeInSecForIosWeb: 1,
+    backgroundColor: color,
+    textColor: Colors.white,
+    fontSize: 16.0,
+  );
+}

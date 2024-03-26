@@ -14,7 +14,6 @@ main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   await cacheHelper.init();
   uId = cacheHelper.getString(key: 'uId');
   Bloc.observer = MyBlocObserver();
@@ -33,7 +32,7 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => SocialAppCubit(),
+          create: (context) => SocialAppCubit()..getPosts(),
         )
       ],
       child: MaterialApp(
