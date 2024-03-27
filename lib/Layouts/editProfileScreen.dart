@@ -15,9 +15,9 @@ class EditPrfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var cubit = SocialAppCubit.get(context);
-    NameController.text = cubit.model!.name!;
-    BioController.text = cubit.model!.bio!;
-    PhoneController.text = cubit.model!.phone!;
+    NameController.text = cubit.Umodel!.name!;
+    BioController.text = cubit.Umodel!.bio!;
+    PhoneController.text = cubit.Umodel!.phone!;
     return BlocConsumer<SocialAppCubit, SocialAppState>(
       listener: (context, state) {
         // TODO: implement listener
@@ -36,6 +36,7 @@ class EditPrfileScreen extends StatelessWidget {
                         bio: BioController.text,
                         phone: PhoneController.text,
                         name: NameController.text,
+                        context: context
                       );
                     },
                     child: Text(
@@ -137,12 +138,11 @@ class EditPrfileScreen extends StatelessWidget {
                 SizedBox(
                   height: 10,
                 ),
-            if(state is uploadDataLoading)
-                LinearProgressIndicator(),
-             if(state is uploadDataLoading)
-               SizedBox(
-                  height: 10,
-                ),
+                if (state is uploadDataLoading) LinearProgressIndicator(),
+                if (state is uploadDataLoading)
+                  SizedBox(
+                    height: 10,
+                  ),
                 defulttextFormField(
                     validator: (value) {},
                     textInputType: TextInputType.text,

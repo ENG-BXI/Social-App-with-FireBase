@@ -87,8 +87,8 @@ Widget defultBurrom(
 
 const defualtColor = Colors.deepOrange ; 
 String? uId  = '';
-String? ProfileImageUrl  = '';
-String? CoverImageUrl  = '';
+String? ProfileImageUrl;
+String? CoverImageUrl;
 toastMessage({
   required String message,
   required Color color,

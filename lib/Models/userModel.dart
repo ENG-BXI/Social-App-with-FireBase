@@ -12,8 +12,8 @@ class userModel {
       required this.email,
       required this.password,
       required this.phone,
-      required this.image,
-      required this.cover,
+       this.image,
+       this.cover,
       required this.bio,
       required this.isVerficatifon});
 

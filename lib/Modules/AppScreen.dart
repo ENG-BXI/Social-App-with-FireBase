@@ -54,7 +54,7 @@ class AppScreen extends StatelessWidget {
             ],
             currentIndex: cubit.currentIndex,
             onTap: (index) {
-              cubit.changeCurrentIndex(index, context);
+              cubit.changeCurrentIndex(index, context: context);
             },
           ),
         );

@@ -21,7 +21,7 @@ class settingScreen extends StatelessWidget {
       },
       builder: (context, state) {
         var cubit = SocialAppCubit.get(context);
-        if (cubit.model != null) {
+        if (cubit.Umodel != null) {
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: RefreshIndicator(
@@ -77,7 +77,7 @@ class settingScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    cubit.model!.name!,
+                    cubit.Umodel!.name!,
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium!
@@ -87,7 +87,7 @@ class settingScreen extends StatelessWidget {
                     height: 5,
                   ),
                   Text(
-                    cubit.model!.bio!,
+                    cubit.Umodel!.bio!,
                     style: Theme.of(context).textTheme.bodySmall!,
                   ),
                   SizedBox(

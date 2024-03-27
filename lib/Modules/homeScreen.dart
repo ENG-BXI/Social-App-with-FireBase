@@ -24,7 +24,7 @@ class homeScreen extends StatelessWidget {
         // TODO: implement listener
       },
       builder: (context, state) {
-        if (cubit.model != null) {
+        if (cubit.Umodel != null && cubit.Posts.length > 0) {
           return RefreshIndicator(
             onRefresh: () => Future.delayed(Duration(seconds: 5)).then((value) {
               cubit.getFireBaseData();
@@ -60,11 +60,12 @@ class homeScreen extends StatelessWidget {
                       )
                     ],
                   ),
+                  
                   ListView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
                     itemBuilder: (context, index) =>
-                        buildItemPosts(context, cubit.Posts[index]),
+                        buildItemPosts(context, cubit.Posts[index], index),
                     itemCount: cubit.Posts.length,
                   )
                 ],
@@ -79,7 +80,7 @@ class homeScreen extends StatelessWidget {
     );
   }
 
-  buildItemPosts(context, postModel model) => Card(
+  buildItemPosts(context, postModel model, int index) => Card(
         shape: ShapeBorder.lerp(InputBorder.none, LinearBorder.none, 10),
         elevation: 5,
         shadowColor: Colors.black,
@@ -118,7 +119,7 @@ class homeScreen extends StatelessWidget {
                                       .copyWith(fontSize: 18),
                                 ),
                               ),
-                              const SizedBox(
+                              SizedBox(
                                 width: 5,
                               ),
                               if (model.isVerficatifon!)
@@ -245,7 +246,9 @@ class homeScreen extends StatelessWidget {
                               width: 5,
                             ),
                             Text(
-                              '120',
+                              SocialAppCubit.get(context)
+                                  .likes[index]
+                                  .toString(),
                               style: Theme.of(context)
                                   .textTheme
                                   .caption!
@@ -309,7 +312,7 @@ class homeScreen extends StatelessWidget {
                                   fit: BoxFit.cover,
                                   image: CachedNetworkImageProvider(
                                       SocialAppCubit.get(context)
-                                          .model!
+                                          .Umodel!
                                           .image!),
                                 ),
                               ),
@@ -346,7 +349,10 @@ class homeScreen extends StatelessWidget {
                           ],
                         ),
                       ),
-                      onTap: () {},
+                      onTap: () {
+                        SocialAppCubit.get(context)
+                            .addLike(SocialAppCubit.get(context).PostId[index]);
+                      },
                     )
                   ],
                 ),

@@ -23,6 +23,15 @@ class settingScreenError extends SocialAppState {
   settingScreenError(this.Error);
 }
 
+class addLikeLoading extends SocialAppState {}
+
+class addLikeLoaded extends SocialAppState {}
+
+class addLikeError extends SocialAppState {
+  String Error;
+  addLikeError(this.Error);
+}
+
 class imagePickerLoading extends SocialAppState {}
 
 class imagePickerLoaded extends SocialAppState {}
@@ -47,6 +56,7 @@ class HomeScreenErrorData extends SocialAppState {
   String Error;
   HomeScreenErrorData({required this.Error});
 }
+
 class getPostsLoadingData extends SocialAppState {}
 
 class getPostsLoadedData extends SocialAppState {}
@@ -54,6 +64,15 @@ class getPostsLoadedData extends SocialAppState {}
 class getPostsErrorData extends SocialAppState {
   String Error;
   getPostsErrorData({required this.Error});
+}
+
+class getAllUserLoadingData extends SocialAppState {}
+
+class getAllUserLoadedData extends SocialAppState {}
+
+class getAllUserErrorData extends SocialAppState {
+  String Error;
+  getAllUserErrorData({required this.Error});
 }
 
 class CreatePostLoadingData extends SocialAppState {}
@@ -104,5 +123,7 @@ class uploadDataError extends SocialAppState {
   String error;
   uploadDataError({required this.error});
 }
+
 class postImagePickerLoaded extends SocialAppState {}
+
 class removeImagePostState extends SocialAppState {}

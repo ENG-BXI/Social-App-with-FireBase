@@ -116,7 +116,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     required String name,
   }) async {
     print('proccess 1 ');
-    model = userModel(
+    Umodel = userModel(
         name: name,
         email: email,
         password: password,
@@ -132,7 +132,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     _firebaseFirestore
         .collection('users')
         .doc(uId)
-        .set(model!.toMap())
+        .set(Umodel!.toMap())
         .then((value) {
       print('proccess 1 ');
 
@@ -142,14 +142,14 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     });
   }
 
-  userModel? model;
+  userModel? Umodel;
   getFireBaseData({bool isUpdate = false, bool isRefresh = false}) {
     emit(settingScreenLoading());
-    if (model != null && !isUpdate && !isRefresh) {
+    if (Umodel != null && !isUpdate && !isRefresh) {
       emit(settingScreenLoaded());
     } else {
       _firebaseFirestore.collection('users').doc(uId).get().then((value) {
-        model = userModel.fromjson(value.data());
+        Umodel = userModel.fromjson(value.data());
         emit(settingScreenLoaded());
       }).catchError((error) {
         print("======================= errror");
@@ -167,7 +167,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
     settingScreen()
   ];
   int currentIndex = 0;
-  changeCurrentIndex(int index, context) {
+  changeCurrentIndex(int index, {context}) {
     currentIndex = index;
     if (index == 2) {
       Navigator.push(context, MaterialPageRoute(builder: (_) => PostsScreen()));
@@ -227,7 +227,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   ImageProvider<Object> changeImage(context) {
     var image;
     image = imageFile == null
-        ? CachedNetworkImageProvider(model!.image!)
+        ? CachedNetworkImageProvider(Umodel!.image!)
         : FileImage(imageFile!);
     return image;
   }
@@ -235,7 +235,7 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   ImageProvider<Object> changeImageCover(context) {
     var image;
     image = imageCoverFile == null
-        ? CachedNetworkImageProvider(model!.cover!)
+        ? CachedNetworkImageProvider(Umodel!.cover!)
         : FileImage(imageCoverFile!);
     return image;
   }
@@ -280,38 +280,28 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   }
 
   postModel? pModel;
-  uploadDataToFireStore({
-    String? name,
-    String? email,
-    String? password,
-    String? phone,
-    String? image,
-    String? cover,
-    String? bio,
-    bool isVerficatifon = false,
-  }) {
+  uploadDataToFireStore(
+      {String? name,
+      String? email,
+      String? password,
+      String? phone,
+      String? image,
+      String? cover,
+      String? bio,
+      bool isVerficatifon = false,
+      context}) {
     emit(uploadDataLoading());
-    _conditionProfileImage(image) {
-      return image == null ? model!.image : image;
-    }
-
-    _conditionCoverImage(coverImage) {
-      return coverImage == null ? model!.cover : coverImage;
-    }
 
     userModel _model = userModel(
-      name: name == null ? model!.name : name,
-      email: email == null ? model!.email : email,
-      password: password == null ? model!.password : password,
-      phone: phone == null ? model!.phone : phone,
-      image: ProfileImageUrl == null
-          ? _conditionProfileImage(image)
-          : ProfileImageUrl,
-      cover:
-          CoverImageUrl == null ? _conditionCoverImage(cover) : CoverImageUrl,
-      bio: bio == null ? model!.bio : bio,
-      isVerficatifon: isVerficatifon == model!.isVerficatifon
-          ? model!.isVerficatifon
+      name: name ?? Umodel!.name,
+      email: email ?? Umodel!.email,
+      password: password ?? Umodel!.password,
+      phone: phone ?? Umodel!.phone,
+      image: ProfileImageUrl ?? Umodel!.image!,
+      cover: CoverImageUrl ?? Umodel!.cover!,
+      bio: bio ?? Umodel!.bio,
+      isVerficatifon: isVerficatifon == Umodel!.isVerficatifon
+          ? Umodel!.isVerficatifon
           : isVerficatifon,
     );
     // userModel _model = userModel(name: name, email: email, password: password, phone: phone, image: image, cover: cover, bio: bio, isVerficatifon: isVerficatifon);
@@ -321,6 +311,8 @@ class SocialAppCubit extends Cubit<SocialAppState> {
         .update(_model.toMap())
         .then((value) {
       getFireBaseData(isUpdate: true);
+      changeCurrentIndex(screen.length - 1, context: context);
+      Navigator.pop(context);
     }).catchError((error) {
       emit(uploadDataError(error: error.toString()));
     });
@@ -387,15 +379,54 @@ class SocialAppCubit extends Cubit<SocialAppState> {
   }
 
   List<postModel> Posts = [];
-  getPosts() {
+  List<String> PostId = [];
+  List<int> likes = [];
+  getPosts() async {
+    Posts = [];
+    PostId = [];
+    likes = [];
     emit(getPostsLoadingData());
-    _firebaseFirestore.collection('posts').get().then((value) {
-      value.docs.forEach((element) {
-        Posts.add(postModel.fromjson(element.data()));
-        emit(getPostsLoadedData());
-      });
+    var _allPosts = await _firebaseFirestore.collection('posts').get();
+    _allPosts.docs.forEach((element) async {
+      var _like = await element.reference.collection('like').get();
+      likes.add(_like.docs.length ?? 0);
+      Posts.add(postModel.fromjson(element.data()));
+      PostId.add(element.id);
+    });
+
+    await _firebaseFirestore.collection('posts').get().then((Value) {
+      print("=====================");
+      print(likes.toString());
+      emit(getPostsLoadedData());
     }).catchError((error) {
       emit(getPostsErrorData(Error: error.toString()));
     });
+  }
+
+  addLike(String PostId) {
+    emit(addLikeLoading());
+    _firebaseFirestore
+        .collection('posts')
+        .doc(PostId)
+        .collection('like')
+        .doc(uId)
+        .set({'status': true}).then((value) {
+      emit(addLikeLoaded());
+    }).catchError((error) {
+      emit(addLikeError(error.toString()));
+    });
+  }
+
+  List<userModel> allUsers = [];
+  List<String> UsersId = [];
+
+  getAllUser() async {
+    emit(getAllUserLoadingData());
+    var users = await _firebaseFirestore.collection("users").get();
+    users.docs.forEach((element) {
+      allUsers.add(userModel.fromjson(element.data()));
+      UsersId.add(element.id);
+    });
+    emit(getAllUserLoadedData());
   }
 }

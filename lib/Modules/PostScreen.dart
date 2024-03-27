@@ -38,7 +38,7 @@ class PostsScreen extends StatelessWidget {
                       //here stop
                       if (textController.text != '') {
                         cubit.CreatePost(
-                          name: cubit.model!.name!,
+                          name: cubit.Umodel!.name!,
                           text: textController.text,
                           isVerification: false,
                           context: context,
@@ -75,7 +75,7 @@ class PostsScreen extends StatelessWidget {
                         image: DecorationImage(
                           fit: BoxFit.cover,
                           image:
-                              CachedNetworkImageProvider(cubit.model!.image!),
+                              CachedNetworkImageProvider(cubit.Umodel!.image!),
                         ),
                       ),
                     ),
